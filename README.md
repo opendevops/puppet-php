@@ -1,5 +1,11 @@
 # php
 
+example:
+```
+include php
+php::config { 'php_config': }
+```
+
 #### Table of Contents
 
 1. [Overview](#overview)

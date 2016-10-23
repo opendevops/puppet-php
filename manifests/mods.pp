@@ -1,6 +1,6 @@
-# == Class: php
+# = Class: php::mods
 #
-# Full description of class php here.
+# Description
 #
 # === Parameters
 #
@@ -23,8 +23,10 @@
 #
 # === Examples
 #
-# include php
-# php::config { 'php_config': }
+#   include apache
+#   apache::vhost{ 'appserver1604':
+#     projectPath => '/vagrant/www/projects'
+#   }
 #
 # === Authors
 #
@@ -34,31 +36,38 @@
 #
 # Copyright 2016 Matthew Hansen
 #
-class php () {
+define php::mods ($project = $title) {
 
-  # install php package
-  package { 'php':
-    require => Exec['apt-update'],
-    ensure  => installed,
-  }
+  $modules = [
+    # cli
+    'php-cli',
+    # intl
+    'php-intl',
+    # common
+    'php-common',
+    # curl
+    'php-curl',
+    # gd
+    'php-gd',
+    # mbstring
+    'php-mbstring',
+    # mcrypt
+    'php-mcrypt',
+    # mysql
+    'php-mysql',
+    # opcache
+    'php-opcache',
+    # xml
+    'php-xml',
+    # required for PECL (to install mailparse)
+    # 'php-pear',
+    'php-dev',
+  ]
 
-  # install php-fpm package
-  package { 'php7.0-fpm':
+  package { $modules:
+    ensure  => latest,
     require => Package['php'],
-    ensure  => installed,
+    notify  => Service['php7.0-fpm'],
   }
-
-  # Starts the php7.0-fpm service, and monitors changes to its configuration files and reloads if nesessary
-  service { 'php7.0-fpm':
-    ensure  => running,
-    enable  => true,
-    require => Package['php7.0-fpm']
-  }
-
-  # php mods
-  php::mods{ 'php-mods': }
-
-  # mailparse (from PECL is a repository for PHP Extensions)
-  php::mailparse{ 'php-mailparse': }
 
 }
